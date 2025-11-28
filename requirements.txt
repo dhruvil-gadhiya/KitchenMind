@@ -1,0 +1,11 @@
+Flask
+gunicorn
+requests
+pandas
+numpy
+SQLAlchemy
+pytest
+pytest-cov
+black
+mypy
+flake8
