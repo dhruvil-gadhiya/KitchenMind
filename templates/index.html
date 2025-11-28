@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Chef AI Dashboard{% endblock %}
+
+{% block body %}
+<div class="dashboard-hero" style="background-image: url('/static/images/dashboard_bg.jpg')">
+  <div class="overlay">
+    <header class="topbar">
+      <h1 class="brand">Chef AI Mode</h1>
+      <nav class="nav">
+        <a href="/">Home</a>
+        <a href="#" onclick="document.getElementById('search-box').focus(); return false;">Search</a>
+      </nav>
+    </header>
+
+    <main class="center-card">
+      <h2 class="headline">Find perfect recipes — fast</h2>
+      <p class="sub">Type a dish (for example: <strong>Khaman</strong>, <strong>Dosa</strong>, <strong>Biryani</strong>)</p>
+
+      <form id="search-form" method="POST" action="/get_recipe" class="search-form">
+        <input id="search-box" name="dish" placeholder="Try: khaman" required />
+        <input id="servings" name="servings" type="number" min="1" value="2" />
+        <button type="submit" class="btn">Generate</button>
+      </form>
+
+      <div class="help">
+        <small>Tip: for best results type a dish name exactly (e.g., "Khaman"). Images come from static/images/ — add your own to customize.</small>
+      </div>
+    </main>
+
+    <footer class="footer">
+      <small>Chef AI Mode • Smart recipes • Friendly UI</small>
+    </footer>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,191 @@
+{% extends "base.html" %}
+{% block title %}{{ recipe.name }} — Chef AI{% endblock %}
+
+{% block body %}
+<style>
+  /* animated fixed background (zoom in/out) */
+  .result-hero {
+    position: relative;      /* container for content */
+    z-index: 0;
+    overflow: visible;
+  }
+
+  /* The animated background layer — fixed so it doesn't scroll */
+  .result-hero::before {
+    content: "";
+    position: fixed;         /* fixed to viewport so it never scrolls */
+    inset: 0;                /* top:0; right:0; bottom:0; left:0 */
+    background-image: url('{{ bg }}');
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: cover;
+    transform-origin: center center;
+    will-change: transform;
+    z-index: -1;             /* sit behind the page content */
+    pointer-events: none;    /* allow clicks to pass through */
+    /* animation: name duration timing-function iteration-direction/other */
+    animation: bg-zoom 20s ease-in-out infinite alternate;
+  }
+
+  /* Make sure the content sits above the background */
+  .result-hero .glass {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Example animation: slow subtle zoom in/out */
+  @keyframes bg-zoom {
+    /* start at normal size */
+    0%   { transform: scale(1); }
+    /* zoom in slightly */
+    100% { transform: scale(1.12); }
+  }
+
+  /* Accessibility: stop motion for users who prefer reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    .result-hero::before {
+      animation: none;
+      transform: scale(1); /* keep static */
+    }
+  }
+
+
+  /* feedback box styles (unchanged) */
+  .feedback-box {
+    margin-top:18px;
+    padding:16px;
+    border-radius:10px;
+    background: linear-gradient(90deg,#fff,#fbfbfb);
+    border:1px solid #eee;
+  }
+  .stars { display:flex; gap:6px; align-items:center; }
+  .star { font-size:26px; cursor:pointer; user-select:none; opacity:0.35; }
+  .star.selected { opacity:1; color: #ffb400; }
+  .feedback-note { font-size:13px; color:#666; margin-top:8px; }
+  textarea#feedback-msg { width:100%; min-height:90px; padding:10px; border-radius:8px; border:1px solid #ddd; resize:vertical; }
+  .feedback-actions { margin-top:8px; display:flex; gap:8px; align-items:center; }
+</style>
+
+
+<div class="result-hero">
+  <div class="glass">
+    <a class="back" href="/">← Back to dashboard</a>
+
+    <div class="result-header">
+      <h1 class="dish-name">{{ recipe.name }}</h1>
+      <p class="funny-line">{{ recipe.funny_line }}</p>
+      <p class="serving">Serving size: <strong>{{ recipe.serving_size }}</strong></p>
+    </div>
+
+    <section class="ingredients">
+      <h2>Ingredients — detailed & scaled</h2>
+      <table class="ingredients-table">
+        <thead>
+          <tr><th>Ingredient</th><th>Quantity</th><th>About</th></tr>
+        </thead>
+        <tbody>
+          {% for item, data in recipe.ingredients_detailed.items() %}
+          <tr>
+            <td>{{ item.split('(')[0] }}</td>
+            <td>{{ data.quantity }}</td>
+            <td>{{ data.description }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </section>
+
+    <section class="steps">
+      <h2>Steps — detailed method</h2>
+      <ol class="steps-list">
+        {% for step in recipe.steps_detailed %}
+        <li>
+          <div class="step-header">Step {{ loop.index }}</div>
+          <p class="step-body">{{ step }}</p>
+        </li>
+        {% endfor %}
+      </ol>
+    </section>
+
+    <div class="closing">
+      <p class="good-message">{{ recipe.good_message }}</p>
+      <p><a class="btn" href="/">Search another recipe</a></p>
+    </div>
+
+    <!-- Feedback UI -->
+    <div class="feedback-box" aria-label="Feedback section">
+      {% if feedback_thanks %}
+        <div style="font-weight:700;color:#0b8457;margin-bottom:8px;">{{ feedback_thanks }}</div>
+      {% endif %}
+      <form method="POST" action="/feedback">
+        <input type="hidden" name="recipe_name" value="{{ recipe.name }}">
+        <input type="hidden" name="servings" value="{{ recipe.serving_size }}">
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <label style="font-weight:700;">Rate this recipe (optional)</label>
+          <div class="stars" id="star-container" role="radiogroup" aria-label="Rating">
+            <span class="star" data-value="1" role="radio" aria-checked="false">★</span>
+            <span class="star" data-value="2" role="radio" aria-checked="false">★</span>
+            <span class="star" data-value="3" role="radio" aria-checked="false">★</span>
+            <span class="star" data-value="4" role="radio" aria-checked="false">★</span>
+            <span class="star" data-value="5" role="radio" aria-checked="false">★</span>
+          </div>
+
+          <label style="font-weight:700;margin-top:8px;">Message (optional)</label>
+          <textarea id="feedback-msg" name="message" placeholder="Tell us what you liked or what could be better..."></textarea>
+
+          <div class="feedback-note">Note: Feedback is <strong>optional</strong>, but very helpful. You can leave a rating, a message, or both.</div>
+
+          <div class="feedback-actions">
+            <input id="rating-input" type="hidden" name="rating" value="">
+            <button class="btn" type="submit">Submit feedback</button>
+            <a class="btn" href="/" style="background:#94a3b8">Skip</a>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <footer class="result-footer">
+      <small>Recipe generated by Chef AI Mode</small>
+    </footer>
+  </div>
+</div>
+
+<script>
+  // Simple star rating interaction
+  (function(){
+    const stars = document.querySelectorAll('.star');
+    const ratingInput = document.getElementById('rating-input');
+    let selected = 0;
+    stars.forEach(s => {
+      s.addEventListener('click', function(){
+        const v = parseInt(this.dataset.value, 10);
+        selected = v;
+        ratingInput.value = v;
+        stars.forEach(st => {
+          if (parseInt(st.dataset.value,10) <= v) {
+            st.classList.add('selected');
+            st.setAttribute('aria-checked','true');
+          } else {
+            st.classList.remove('selected');
+            st.setAttribute('aria-checked','false');
+          }
+        });
+      });
+      s.addEventListener('mouseover', function(){
+        const v = parseInt(this.dataset.value, 10);
+        stars.forEach(st => {
+          if (parseInt(st.dataset.value,10) <= v) st.classList.add('selected');
+          else st.classList.remove('selected');
+        });
+      });
+      s.addEventListener('mouseout', function(){
+        // restore selected state
+        stars.forEach(st => {
+          if (selected && parseInt(st.dataset.value,10) <= selected) st.classList.add('selected');
+          else st.classList.remove('selected');
+        });
+      });
+    });
+  })();
+</script>
+{% endblock %}
