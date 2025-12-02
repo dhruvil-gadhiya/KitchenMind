@@ -41,5 +41,79 @@
       "Fry until puffed and golden",
       "Serve hot with chhole"
     ]
+  },
+  {
+    "name": "Kaju katli",
+    "serving_size": 5,
+    "score": 5,
+    "ingredients": {
+      "Cashew powder (cups)": "2.5",
+      "Sugar (cups)": "1.25",
+      "Water (tbsp)": "7.5",
+      "Ghee (tsp)": "2.5",
+      "Cardamom powder (tsp)": "0.6",
+      "Silver vark (optional)": "1"
+    },
+    "steps": [
+      "Blend cashews into fine powder",
+      "Heat sugar and water to make a syrup",
+      "Add cashew powder and mix continuously",
+      "Cook on low flame until mixture thickens",
+      "Add ghee and cardamom powder",
+      "Transfer mixture onto greased plate",
+      "Flatten using a rolling pin",
+      "Let it cool slightly",
+      "Cut into diamond-shaped pieces"
+    ]
+  },
+  {
+    "name": "Ras Gulla",
+    "serving_size": 4,
+    "score": 4,
+    "ingredients": {
+      "Milk (liters)": "2.5",
+      "Lemon juice or vinegar (tbsp)": "7.5",
+      "Sugar (cups)": "2.5",
+      "Water (cups)": "7.5",
+      "Cardamom powder (tsp)": "1.25",
+      "Rose water (tsp)": "2.5"
+    },
+    "steps": [
+      "Boil milk in a deep pan",
+      "Add lemon juice to curdle the milk",
+      "Strain and wash the chenna under cold water",
+      "Knead the chenna until smooth",
+      "Divide and roll into small balls",
+      "Boil water and sugar to make syrup",
+      "Add the chenna balls into boiling syrup",
+      "Cover and cook on medium flame",
+      "Let rasgullas expand and turn spongy",
+      "Cool and add rose water before serving"
+    ]
+  },
+  {
+    "name": "Ras Gulla",
+    "serving_size": 4,
+    "score": 4,
+    "ingredients": {
+      "Milk (liters)": "2.5",
+      "Lemon juice or vinegar (tbsp)": "7.5",
+      "Sugar (cups)": "2.5",
+      "Water (cups)": "7.5",
+      "Cardamom powder (tsp)": "1.25",
+      "Rose water (tsp)": "2.5"
+    },
+    "steps": [
+      "Boil milk in a deep pan",
+      "Add lemon juice to curdle the milk",
+      "Strain and wash the chenna under cold water",
+      "Knead the chenna until smooth",
+      "Divide and roll into small balls",
+      "Boil water and sugar to make syrup",
+      "Add the chenna balls into boiling syrup",
+      "Cover and cook on medium flame",
+      "Let rasgullas expand and turn spongy",
+      "Cool and add rose water before serving"
+    ]
   }
 ]

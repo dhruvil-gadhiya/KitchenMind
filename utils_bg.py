@@ -32,6 +32,9 @@ def get_background_image(dish_name: str):
         "poha": "/static/images/Poha.png",
         "veg momos": "/static/images/Veg Momos.png",
         "masala khichdi": "/static/images/Masala Khichdi.png",
+        "chhole bhature": "/static/images/Chhole Bhature.png",
+        "kaju katli" : "/static/images/Kaju Katli.png",
+        "ras gulla": "/static/images/Ras gulla.png",
     }
 
     # substring match
