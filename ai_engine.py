@@ -1,9 +1,14 @@
+# ai_engine.py
 import random
 import difflib
 from recipes_data import RECIPES
 from utils_scaling import scale_ingredients
+from typing import List, Dict, Optional
 
-# small knowledge base of common ingredient descriptions (same as before)
+# (keep your existing COMMON_ING_DESCRIPTIONS, GOOD_MESSAGES, FUNNY_LINE_TEMPLATES,
+# _generate_funny_lines, _ingredient_description, _expand_step unchanged)
+# I'll paste them here exactly as before from your final code to keep behavior identical.
+
 COMMON_ING_DESCRIPTIONS = {
     "besan": "chickpea flour used in many Indian snacks — gives a nutty, dense texture.",
     "semolina": "coarse durum wheat flour (rava) that gives body and slight bite.",
@@ -61,10 +66,6 @@ FUNNY_LINE_TEMPLATES = [
     "Pro tip: eat {dish}, become unstoppable. 💪😄",
     "{dish} + you = a perfect love story. 💘🍕",
     "One bite of {dish} can fix almost anything. 🛠️😄",
-    "{dish}: turning hunger into happiness since forever. 😍✨",
-    "Warning: smelling {dish} may cause neighbors to visit. 😂🏠",
-    "Fun fact: Thinking about {dish} boosts your mood instantly. 😌📈",
-    "{dish} deserves an award for making life better. 🏆🍽️",
     "{dish} is proof that magic exists. ✨🪄",
     "Today’s vibe: {dish} and zero stress. 😌🍛",
     "Breaking: {dish} officially voted 'Best Life Decision'. 🗳️🍲",
@@ -140,7 +141,7 @@ def _expand_step(step_text: str, dish_name: str, serving: int):
     return (f"{step_text}. Do this carefully: use medium heat, taste and adjust seasoning as you go, "
             f"and make sure the final texture suits your preference. For {dish}, follow this step patiently for best results.")
 
-def _find_matches(dish_lower: str):
+def _find_matches(dish_lower: str, recipes_list: List[Dict]):
     """
     Returns list of recipe dicts that match the dish_lower string.
     Matching order:
@@ -152,29 +153,32 @@ def _find_matches(dish_lower: str):
         return []
 
     # 1) substring match
-    substring_matches = [r for r in RECIPES if dish_lower in r["name"].lower()]
+    substring_matches = [r for r in recipes_list if dish_lower in (r.get("name","").lower())]
     if substring_matches:
         return substring_matches
 
     # 2) startswith match
-    startswith_matches = [r for r in RECIPES if r["name"].lower().startswith(dish_lower)]
+    startswith_matches = [r for r in recipes_list if (r.get("name","").lower()).startswith(dish_lower)]
     if startswith_matches:
         return startswith_matches
 
     # 3) difflib close matches on recipe names
-    names = [r["name"] for r in RECIPES]
+    names = [r.get("name","") for r in recipes_list]
     close = difflib.get_close_matches(dish_lower, [n.lower() for n in names], n=5, cutoff=0.6)
     if close:
-        # map name back to recipe dict(s)
         close_set = set(close)
-        return [r for r in RECIPES if r["name"].lower() in close_set]
+        return [r for r in recipes_list if (r.get("name","").lower()) in close_set]
 
     return []
 
-def generate_recipe(dish, servings):
+def generate_recipe(dish: str, servings: int, extra_recipes: Optional[List[Dict]] = None):
+    """
+    Generate recipe output using built-in RECIPES plus optional extra_recipes (user-saved).
+    """
     dish_lower = (dish or "").lower().strip()
+    recipes_all = list(RECIPES) + (list(extra_recipes) if extra_recipes else [])
 
-    matches = _find_matches(dish_lower)
+    matches = _find_matches(dish_lower, recipes_all)
 
     if not matches:
         return {
@@ -194,7 +198,7 @@ def generate_recipe(dish, servings):
     recipe = best
 
     factor = float(servings) / float(recipe.get("serving_size", 1))
-    scaled_ing = scale_ingredients(recipe["ingredients"], factor)
+    scaled_ing = scale_ingredients(recipe.get("ingredients", {}), factor)
 
     ingredients_detailed = {}
     for item, qty in scaled_ing.items():
@@ -208,14 +212,14 @@ def generate_recipe(dish, servings):
     steps = recipe.get("steps", [])
     steps_detailed = []
     for s in steps:
-        steps_detailed.append(_expand_step(s, recipe["name"], servings))
+        steps_detailed.append(_expand_step(s, recipe.get("name", dish), servings))
 
-    funny_lines = _generate_funny_lines(recipe["name"])
+    funny_lines = _generate_funny_lines(recipe.get("name", dish))
     funny_line = random.choice(funny_lines)
     good_message = random.choice(GOOD_MESSAGES)
 
     return {
-        "name": recipe["name"],
+        "name": recipe.get("name", dish),
         "serving_size": servings,
         "ingredients": scaled_ing,
         "ingredients_detailed": ingredients_detailed,

@@ -1,0 +1,45 @@
+[
+  {
+    "name": "Chhole Bhature",
+    "serving_size": 5,
+    "score": 5,
+    "ingredients": {
+      "Chickpeas (cups)": "2",
+      "Water (cups)": "0.5",
+      "Onion (medium)": "2",
+      "Tomato (medium)": "2",
+      "Ginger garlic paste (tbsp)": "2",
+      "Chole masala (tbsp)": "2",
+      "Cumin seeds (tsp)": "1",
+      "Turmeric powder (tsp)": "0.5",
+      "Red chilli powder (tsp)": "1",
+      "Garam masala (tsp)": "1",
+      "Salt (tsp)": "0.5",
+      "Oil (tbsp)": "1",
+      "All-purpose flour (cups)": "2",
+      "Semolina (tbsp)": "2",
+      "Yogurt (tbsp)": "4",
+      "Sugar (tsp)": "1",
+      "Oil for frying (cups)": "2"
+    },
+    "steps": [
+      "Soak chickpeas overnight",
+      "Pressure cook soaked chickpeas with salt until soft",
+      "Heat oil in a pan and add cumin seeds",
+      "Add chopped onions and sauté until golden",
+      "Add ginger garlic paste and cook for a minute",
+      "Add tomatoes and cook until soft",
+      "Add turmeric red chilli powder and chole masala",
+      "Add boiled chickpeas and mix well",
+      "Simmer for 10 minutes to blend flavours",
+      "Add garam masala and turn off heat",
+      "Mix flour semolina salt sugar and oil in a bowl",
+      "Add yogurt and knead into a soft dough",
+      "Rest dough for 1 hour",
+      "Heat oil for deep frying",
+      "Roll small dough balls into bhature",
+      "Fry until puffed and golden",
+      "Serve hot with chhole"
+    ]
+  }
+]
