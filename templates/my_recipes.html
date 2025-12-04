@@ -24,11 +24,11 @@
       <table class="ingredients-table" aria-label="Your recipes">
         <thead>
           <tr>
-            <th style="width:40%">Name</th>
-            <th style="width:15%">Servings</th>
-            <th style="width:15%">Score</th>
+            <th style="width:50%">Name</th>
+            <th style="width:20%">Servings</th>
             <th style="width:15%">Uses</th>
-            <th style="width:15%">Actions</th>
+            <th style="width:15%">Recipe</th>
+            <th style="width:15%">Feedback</th>
           </tr>
         </thead>
         <tbody>
@@ -36,19 +36,33 @@
           <tr>
             <td>{{ r.name }}</td>
             <td>{{ r.serving_size }}</td>
-            <td>{{ r.score }}</td>
             <td>{{ r.usage_count or 0 }}</td>
             <td>
               <form method="POST" action="/get_recipe" style="display:inline;">
                 <input type="hidden" name="dish" value="{{ r.name }}" />
                 <input type="hidden" name="servings" value="{{ r.serving_size }}" />
-                <button class="btn" type="submit" style="padding:6px 10px;">Open</button>
+                <button class="btn" type="submit" style="padding:6px 10px;">Recipe</button>
               </form>
+            </td>
+            <td>
+              <a class="btn" href="/feedback_for?recipe={{ r.name }}" style="padding:6px 10px;background:#475569">Feedback</a>
             </td>
           </tr>
           {% endfor %}
         </tbody>
       </table>
+
+      <div style="margin-top:12px; display:flex; gap:8px; align-items:center;">
+        {% if pages and pages > 1 %}
+          {% for i in range(1, pages + 1) %}
+            {% if i == page %}
+              <span class="btn" style="background:#475569; pointer-events:none;">{{ i }}</span>
+            {% else %}
+              <a class="btn" href="/my_recipes?page={{ i }}" style="background:#f97316">{{ i }}</a>
+            {% endif %}
+          {% endfor %}
+        {% endif %}
+      </div>
       {% else %}
         <div style="color:#555;">No recipes yet. Add your first one!</div>
       {% endif %}

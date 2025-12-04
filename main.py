@@ -5,7 +5,6 @@ import smtplib
 import ssl
 from router import get_recipe_output
 from utils_bg import get_background_image
-import csv
 from datetime import datetime
 import os
 from storage import (
@@ -16,6 +15,7 @@ from storage import (
     load_user_recipes,
     increment_usage_for_variant,
 )
+import csv
 
 app = Flask(__name__)
 app.secret_key = "supersecretkey123"
@@ -46,8 +46,9 @@ def get_recipe():
 
     # choose background image (dish-specific or default)
     bg = get_background_image(final_recipe.get("name", recipe_name))
-    # no feedback message by default
-    return render_template("result.html", recipe=final_recipe, bg=bg, feedback_thanks=None)
+    # aggregate feedback for chart & reviews
+    stats, reviews = _feedback_summary(final_recipe.get("name", recipe_name))
+    return render_template("result.html", recipe=final_recipe, bg=bg, feedback_thanks=None, feedback_stats=stats, feedback_reviews=reviews)
 
 
 @app.route("/feedback", methods=["POST"])
@@ -79,7 +80,58 @@ def feedback():
         serving_int = 1
     final_recipe = get_recipe_output(recipe_name, serving_int)
     bg = get_background_image(final_recipe.get("name", recipe_name))
-    return render_template("result.html", recipe=final_recipe, bg=bg, feedback_thanks=thanks)
+    stats, reviews = _feedback_summary(final_recipe.get("name", recipe_name))
+    return render_template("result.html", recipe=final_recipe, bg=bg, feedback_thanks=thanks, feedback_stats=stats, feedback_reviews=reviews)
+
+
+# aggregates feedback for summary chart and reviews list
+def _feedback_summary(recipe_name: str):
+    path = "feedback.csv"
+    counts = {1:0,2:0,3:0,4:0,5:0}
+    reviews = []
+    if os.path.isfile(path):
+        try:
+            with open(path, newline='', encoding='utf-8') as f:
+                reader = csv.DictReader(f)
+                for row in reader:
+                    if (row.get("recipe_name") or "").strip().lower() == (recipe_name or "").strip().lower():
+                        r = row.get("rating")
+                        try:
+                            rv = int(r)
+                            if rv in counts:
+                                counts[rv] += 1
+                        except Exception:
+                            pass
+                        reviews.append({
+                            "timestamp": row.get("timestamp"),
+                            "rating": r,
+                            "message": row.get("message")
+                        })
+        except Exception:
+            pass
+    total = sum(counts.values())
+    avg = round(sum(k*v for k,v in counts.items())/total, 2) if total else 0
+    bars = []
+    for star in (5,4,3,2,1):
+        count = counts[star]
+        pct = int(round((count / total * 100))) if total > 0 else 0
+        bars.append({"star": star, "count": count, "pct": pct})
+    def _rating_int(r):
+        try:
+            return int(r.get("rating") or 0)
+        except Exception:
+            return 0
+    reviews_sorted = sorted(reviews, key=lambda r: (_rating_int(r), r.get("timestamp") or ""), reverse=True)
+    return ({"counts": counts, "total": total, "avg": avg, "bars": bars}, reviews_sorted)
+
+
+@app.route("/feedback_for")
+def feedback_for():
+    if not session.get("logged_in") or session.get("role") != "inputter":
+        return redirect(url_for("login", next="feedback_for"))
+    name = request.args.get("recipe", "")
+    stats, reviews = _feedback_summary(name)
+    return render_template("feedback_list.html", recipe_name=name, stats=stats, reviews=reviews)
 
 
 # -------------------- New: add recipe routes --------------------
@@ -148,15 +200,11 @@ def add_recipe_submit():
 
     ingredients_text = request.form.get("ingredients", "").strip()
     steps_text = request.form.get("steps", "").strip()
-    score_text = request.form.get("score", "").strip()
 
     ingredients = _parse_ingredients(ingredients_text)
     steps = [s.strip() for s in steps_text.splitlines() if s.strip()]
 
-    try:
-        score = int(score_text) if score_text else 5
-    except Exception:
-        score = 5
+    score = 5
 
     recipe_obj = {
         "name": name,
@@ -308,7 +356,18 @@ def my_recipes():
     mine = [r for r in all_recipes if (r.get("owner_email") or "").strip().lower() == (email.strip().lower())]
     total = len(mine)
     total_usage = sum(int(r.get("usage_count", 0)) for r in mine)
-    return render_template("my_recipes.html", recipes=mine, total=total, total_usage=total_usage)
+    try:
+        page = int(request.args.get("page", 1))
+    except Exception:
+        page = 1
+    if page < 1:
+        page = 1
+    per_page = 5
+    pages = (total + per_page - 1) // per_page if total > 0 else 1
+    start = (page - 1) * per_page
+    end = start + per_page
+    page_recipes = mine[start:end]
+    return render_template("my_recipes.html", recipes=page_recipes, total=total, total_usage=total_usage, page=page, pages=pages, per_page=per_page)
 
 
 if __name__ == "__main__":

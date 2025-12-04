@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% block title %}Feedback — Chef AI{% endblock %}
+
+{% block body %}
+<div class="dashboard-hero" style="background-image: url('/static/images/dashboard_bg.jpg');">
+  <div class="overlay" style="max-width:960px; margin:auto;">
+
+    <header class="topbar">
+      <h1 class="brand">Feedback for {{ recipe_name }}</h1>
+      <nav class="nav">
+        <a href="/">Home</a>
+        <a href="/my_recipes">History</a>
+      </nav>
+    </header>
+
+    <main style="padding:18px;">
+
+      {% if stats and stats.total > 0 %}
+        <div class="glass" style="padding:12px; background:rgba(255,255,255,0.88); border-radius:12px;">
+
+          <div style="font-weight:700;">Customer reviews</div>
+
+          <div style="display:flex; gap:16px; align-items:center; margin-bottom:8px;">
+            <div style="font-size:18px;">⭐ {{ stats.avg }} out of 5</div>
+            <div style="color:#555;">{{ stats.total }} global ratings</div>
+          </div>
+
+          {% for bar in stats.bars %}
+          <div style="display:flex; align-items:center; gap:8px; margin:4px 0;">
+            <div style="width:48px;">{{ bar.star }} star</div>
+
+            <div style="flex:1; background:#eee; border-radius:8px; height:10px; position:relative;">
+              <div class="bar-fill" data-pct="{{ bar.pct }}" style="position:absolute; left:0; top:0; height:10px; width:0%; background:#f97316; border-radius:8px;"></div>
+            </div>
+
+            <div style="width:48px; color:#555;">{{ bar.pct }}%</div>
+          </div>
+          {% endfor %}
+
+        </div>
+      {% else %}
+        <div style="color:#555;">No reviews yet for this recipe.</div>
+      {% endif %}
+
+      {% if reviews and reviews|length > 0 %}
+        <div style="font-weight:700; margin:16px 0 8px;">Top reviews</div>
+
+        <div style="display:flex; flex-direction:column; gap:12px;">
+
+          {% for r in reviews %}
+          <div style="padding:12px; border:1px solid #eee; border-radius:10px; background:#fff;">
+            
+            <div style="color:#777; font-size:12px;">{{ r.timestamp }}</div>
+
+            <div style="margin:6px 0;">
+              {% set stars = r.rating|int %}
+              {% for i in range(1, 6) %}
+                {% if i <= stars %}★{% else %}☆{% endif %}
+              {% endfor %}
+            </div>
+
+            <div style="color:#333;">{{ r.message }}</div>
+
+          </div>
+          {% endfor %}
+
+        </div>
+        
+      {% endif %}
+
+    </main>
+  </div>
+</div>
+
+{% raw %}
+<script>
+  // Safe JavaScript (Jinja will ignore)
+  const stars = document.querySelectorAll('.star');
+  document.querySelectorAll('.bar-fill').forEach(function(el){
+    var pct = parseInt(el.getAttribute('data-pct'), 10);
+    if(!isNaN(pct)){
+      el.style.width = pct + '%';
+    }
+  });
+</script>
+{% endraw %}
+
+{% endblock %}

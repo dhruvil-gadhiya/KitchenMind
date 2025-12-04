@@ -142,6 +142,44 @@
           </div>
         </div>
       </form>
+
+      <div style="margin-top:12px;">
+        {% if feedback_stats and feedback_stats.total > 0 %}
+          <div style="font-weight:700;margin-bottom:8px;">Customer reviews</div>
+          <div style="display:flex;gap:16px;align-items:center;margin-bottom:8px;">
+            <div style="font-size:18px;">⭐ {{ feedback_stats.avg }} out of 5</div>
+            <div style="color:#555">{{ feedback_stats.total }} global ratings</div>
+          </div>
+          {% for bar in feedback_stats.bars %}
+            <div style="display:flex;align-items:center;gap:8px;margin:4px 0;">
+              <div style="width:48px;">{{ bar.star }} star</div>
+              <div style="flex:1;background:#eee;border-radius:8px;height:10px;position:relative;">
+                <div class="bar-fill" data-pct="{{ bar.pct }}" style="position:absolute;left:0;top:0;height:10px;width:0%;background:#f97316;border-radius:8px;"></div>
+              </div>
+              <div style="width:48px;color:#555;">{{ bar.pct }}%</div>
+            </div>
+          {% endfor %}
+        {% else %}
+          <small style="color:#666;">No reviews yet.</small>
+        {% endif %}
+
+        {% if feedback_reviews and feedback_reviews|length > 0 %}
+          <div style="font-weight:700;margin:16px 0 8px;">Top reviews</div>
+          <div style="display:flex;flex-direction:column;gap:12px;">
+            {% for r in feedback_reviews %}
+              <div style="padding:12px;border:1px solid #eee;border-radius:10px;">
+                <div style="color:#555;font-size:12px;">{{ r.timestamp }}</div>
+                <div style="margin:6px 0;">
+                  {% set stars = r.rating|int %}
+                  {% for i in [1,2,3,4,5] %}{% if i <= stars %}★{% else %}☆{% endif %}{% endfor %}
+                </div>
+                <div style="color:#333;">{{ r.message }}</div>
+              </div>
+            {% endfor %}
+          </div>
+          
+        {% endif %}
+      </div>
     </div>
 
     <footer class="result-footer">
@@ -149,6 +187,8 @@
     </footer>
   </div>
 </div>
+
+ 
 
 <script>
   // Simple star rating interaction
@@ -185,6 +225,15 @@
           else st.classList.remove('selected');
         });
       });
+    });
+  })();
+
+  (function(){
+    document.querySelectorAll('.bar-fill').forEach(function(el){
+      var pct = parseInt(el.getAttribute('data-pct'), 10);
+      if(!isNaN(pct)){
+        el.style.width = pct + '%';
+      }
     });
   })();
 </script>
