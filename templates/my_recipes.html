@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}My Recipes — Chef AI{% endblock %}
+
+{% block body %}
+<div class="dashboard-hero" style="background-image: url('/static/images/dashboard_bg.jpg')">
+  <div class="overlay" style="max-width:960px;">
+    <header class="topbar">
+      <h1 class="brand">My Recipes</h1>
+      <nav class="nav">
+        <a href="/">Home</a>
+        <a href="/add_recipe">Add recipe</a>
+      </nav>
+    </header>
+
+    <main style="padding:18px;">
+      <div style="display:flex; gap:16px; align-items:center; margin-bottom:12px;">
+        <div class="glass" style="padding:12px; box-shadow:none; background:rgba(255,255,255,0.88);">
+          <div style="font-weight:700">Total recipes: {{ total }}</div>
+          <div style="color:#555">Total uses: {{ total_usage }}</div>
+        </div>
+      </div>
+
+      {% if recipes and recipes|length > 0 %}
+      <table class="ingredients-table" aria-label="Your recipes">
+        <thead>
+          <tr>
+            <th style="width:40%">Name</th>
+            <th style="width:15%">Servings</th>
+            <th style="width:15%">Score</th>
+            <th style="width:15%">Uses</th>
+            <th style="width:15%">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in recipes %}
+          <tr>
+            <td>{{ r.name }}</td>
+            <td>{{ r.serving_size }}</td>
+            <td>{{ r.score }}</td>
+            <td>{{ r.usage_count or 0 }}</td>
+            <td>
+              <form method="POST" action="/get_recipe" style="display:inline;">
+                <input type="hidden" name="dish" value="{{ r.name }}" />
+                <input type="hidden" name="servings" value="{{ r.serving_size }}" />
+                <button class="btn" type="submit" style="padding:6px 10px;">Open</button>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+        <div style="color:#555;">No recipes yet. Add your first one!</div>
+      {% endif %}
+    </main>
+  </div>
+  </div>
+{% endblock %}

@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}Sign Up — Chef AI{% endblock %}
+
+{% block body %}
+<div class="dashboard-hero" style="background-image: url('/static/images/dashboard_bg.jpg')">
+  <div class="overlay" style="max-width:620px;">
+    <header class="topbar">
+      <h1 class="brand">Chef AI — Sign Up</h1>
+      <nav class="nav">
+        <a href="/">Home</a>
+      </nav>
+    </header>
+
+    <main style="padding:18px;">
+      {% if error %}
+        <div style="color:#b91c1c;font-weight:700;margin-bottom:12px;">{{ error }}</div>
+      {% endif %}
+      <form method="POST" action="/signup" style="display:flex;flex-direction:column;gap:10px;">
+        <input type="hidden" name="next" value="{{ next }}" />
+        {% if stage == 'otp' %}
+          <input type="hidden" name="stage" value="otp" />
+          <input name="otp" placeholder="Enter 6-digit OTP" required maxlength="6" style="padding:10px;border-radius:8px;border:1px solid #ddd" />
+          <div style="display:flex;gap:8px;align-items:center;justify-content:center;">
+            <a class="btn" href="#" data-send-otp="signup" style="background:#475569">Resend OTP</a>
+            <small id="otp-status" style="color:#666;"></small>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center;justify-content:center;">
+            <button class="btn" type="submit">Verify OTP</button>
+            <a class="btn" href="/login" style="background:#475569">Back to login</a>
+            <a class="btn" href="/" style="background:#94a3b8">Cancel</a>
+          </div>
+        {% else %}
+          <input type="hidden" name="stage" value="creds" />
+          <input name="email" type="email" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" placeholder="Email" required style="padding:10px;border-radius:8px;border:1px solid #ddd" />
+          <div style="position:relative;">
+            <input id="password" name="password" type="password" autocomplete="new-password" placeholder="Password" required style="width:100%;padding:10px;border-radius:8px;border:1px solid #ddd" />
+            <span data-toggle-password="password" title="Show/Hide" style="position:absolute; right:12px; top:50%; transform:translateY(-50%); cursor:pointer; user-select:none;">👁</span>
+          </div>
+          <div style="position:relative;">
+            <input id="confirm_password" name="confirm_password" type="password" autocomplete="new-password" placeholder="Confirm password" required style="width:100%;padding:10px;border-radius:8px;border:1px solid #ddd" />
+            <span data-toggle-password="confirm_password" title="Show/Hide" style="position:absolute; right:12px; top:50%; transform:translateY(-50%); cursor:pointer; user-select:none;">👁</span>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center;justify-content:center;">
+            <button class="btn" type="submit">Continue</button>
+            <a class="btn" href="/login" style="background:#475569">Back to login</a>
+            <a class="btn" href="/" style="background:#94a3b8">Cancel</a>
+          </div>
+        {% endif %}
+      </form>
+    </main>
+  </div>
+  </div>
+{% endblock %}

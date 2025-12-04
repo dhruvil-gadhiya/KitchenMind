@@ -74,6 +74,10 @@ body,html{height:100%;margin:0;background:#f7f7f7;color:#222}
   cursor:pointer;
   font-weight:600;
   box-shadow:0 6px 18px rgba(231,111,81,0.25);
+  text-decoration:none;
+  display:inline-block;
+  min-width:120px;
+  text-align:center;
 }
 .help{margin-top:10px;color:var(--muted)}
 
