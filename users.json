@@ -18,5 +18,10 @@
     "email": "parth@yopmail.com",
     "password_hash": "scrypt:32768:8:1$Q0ZaD1Z9YU0hlEQl$9aa509a18493bfaa3a77bf4e574caff2c1d4efb73380a937cd66140ff447d3e13fc3c5bf75e16b9e5644d755dbd37916511c71b3b664190eadbea84e547e49a6",
     "created_at": "2025-12-04T05:22:15.469550"
+  },
+  {
+    "email": "mayur@yopmail.com",
+    "password_hash": "scrypt:32768:8:1$C7FqaOPJBXZig9m7$f486c9c6c69f64757b05396fb265e2d4aef56123be5df6d428885ee4f10de22e86d7b302b3bfaa9e28bf8c02bcbf4be5457960791de3dd25b81451d1c593ba85",
+    "created_at": "2025-12-04T11:12:18.392383"
   }
 ]

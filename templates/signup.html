@@ -22,12 +22,10 @@
           <input name="otp" placeholder="Enter 6-digit OTP" required maxlength="6" style="padding:10px;border-radius:8px;border:1px solid #ddd" />
           <div style="display:flex;gap:8px;align-items:center;justify-content:center;">
             <a class="btn" href="#" data-send-otp="signup" style="background:#475569">Resend OTP</a>
-            <small id="otp-status" style="color:#666;"></small>
-          </div>
-          <div style="display:flex;gap:8px;align-items:center;justify-content:center;">
             <button class="btn" type="submit">Verify OTP</button>
             <a class="btn" href="/login" style="background:#475569">Back to login</a>
             <a class="btn" href="/" style="background:#94a3b8">Cancel</a>
+            <span id="otp-status" style="margin-left:8px;color:#666;"></span>
           </div>
         {% else %}
           <input type="hidden" name="stage" value="creds" />
